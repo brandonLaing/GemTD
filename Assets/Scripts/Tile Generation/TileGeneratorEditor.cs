@@ -22,5 +22,17 @@ public class TileGeneratorEditor : Editor
     {
       tileGen.Clear();
     }
+
+    GUILayout.Space(10);
+    if (GUILayout.Button("Rebuild gizmo connections"))
+    {
+      tileGen.RebuildConnections();
+    }
+
+    GUILayout.Space(10);
+    if (GUILayout.Button("Clear gizmo connections"))
+    {
+      tileGen.ClearGizmoConnections();
+    }
   }
 }

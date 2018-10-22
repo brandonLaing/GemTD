@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+enum stuff
+{
+  what
+}
 [ExecuteInEditMode]
 public class TileNode : ScriptableObject
 {
@@ -106,7 +110,7 @@ public class TileNode : ScriptableObject
     // the node isn't already connected
     if (!IsNodeConnected(node))
     {
-      Debug.Log("Adding connection to " + this.name);
+      //Debug.Log("Adding connection to " + this.name);
       // go through ever position
       for (int i = 0; i < nodeConnections.Length; i++)
       {
@@ -114,6 +118,9 @@ public class TileNode : ScriptableObject
         if (nodeConnections[i] == null)
         {
           // make a connection for that node in this position
+          //NodeConnection connection = ScriptableObject.CreateInstance<NodeConnection>();
+          //connection.NodeConnectionInit(node, connectionStatus);
+          //nodeConnections[i] = connection;
           nodeConnections[i] = new NodeConnection(node, connectionStatus);
           return;
         }
@@ -158,12 +165,19 @@ public class TileNode : ScriptableObject
 }
 
 // basic data type that holds a node and its connection status
+[SerializeField]
 public class NodeConnection
 {
   public TileNode node;
   public bool IsConnected;
 
   public NodeConnection(TileNode node, bool IsConnected)
+  {
+    this.node = node;
+    this.IsConnected = IsConnected;
+  }
+
+  public void NodeConnectionInit(TileNode node, bool IsConnected)
   {
     this.node = node;
     this.IsConnected = IsConnected;
