@@ -1,20 +1,17 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-enum stuff
-{
-  what
-}
 [ExecuteInEditMode]
 public class TileNode : ScriptableObject
 {
-  public NodeConnection[] nodeConnections = new NodeConnection[4];
   public Transform nodeTransform;
+  public NodeConnection[] nodeConnections = new NodeConnection[4];
 
   // constructor for new tileNode
-  public void TileNodeInit(Transform transform, int nodeNumber)
+  public void TileNodeInit(Transform transform, string nodeNumber)
   {
     this.name = "Node: " + nodeNumber;
     this.nodeTransform = transform;
@@ -165,7 +162,7 @@ public class TileNode : ScriptableObject
 }
 
 // basic data type that holds a node and its connection status
-[SerializeField]
+[Serializable]
 public class NodeConnection
 {
   public TileNode node;

@@ -14,6 +14,7 @@ public class TileGeneratorEditor : Editor
     GUILayout.Space(10);
     if (GUILayout.Button("Build TileGrid"))
     {
+      tileGen.Clear();
       tileGen.BuildTileGrid();
     }
 
