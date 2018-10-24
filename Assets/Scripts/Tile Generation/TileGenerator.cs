@@ -66,8 +66,8 @@ public class TileGenerator : MonoBehaviour
       for (int j = 0; j < mapWidth; j++)
       {
         GameObject tile = MakeNewTile(i, j, currentRow.transform);
-        //MakeConnectionsOld(tile.GetComponent<TileInformation>());
-        MakeConnectionsByRowThenNode(tile.GetComponent<TileInformation>(), currentRow, lastRow);
+        MakeConnectionsOld(tile.GetComponent<TileInformation>());
+        //MakeConnectionsByRowThenNode(tile.GetComponent<TileInformation>(), currentRow, lastRow);
         //MakeConnectionsByNode(tile.GetComponent<TileInformation>());
       }
 
