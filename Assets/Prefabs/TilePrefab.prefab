@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 33921823599469194}
   - component: {fileID: 23622965495403110}
   - component: {fileID: 64226709656134912}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: OutLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   - component: {fileID: 33112684365839712}
   - component: {fileID: 23339885151330092}
   - component: {fileID: 64710389849128538}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Middle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -56,7 +56,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4317749386235900}
   - component: {fileID: 114686365985030674}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: TilePrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
