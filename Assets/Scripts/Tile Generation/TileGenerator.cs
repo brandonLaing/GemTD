@@ -12,13 +12,15 @@ public class TileGenerator : MonoBehaviour
   public int mapWidth = 37;
   public int yPosition = 0;
 
+
   [Header("Resources")]
   public GameObject tilePrefab;
+
 
   [Header("Lists")]
   public List<TileNode> allNodes = new List<TileNode>();
   public List<GizmoConnections> connections = new List<GizmoConnections>();
-  public int numberOfConnections;
+
 
   [Header("Main Stuff")]
   public static TileGenerator main;
@@ -30,24 +32,6 @@ public class TileGenerator : MonoBehaviour
     {
       IsMain = true;
       main = this;
-    }
-  }
-
-  private void Update()
-  {
-    numberOfConnections = connections.Count;
-
-    if (main == this)
-    {
-      IsMain = true;
-    }
-    else if (tag == "TileGenerator")
-    {
-      main = this;
-    }
-    else
-    {
-      IsMain = false;
     }
   }
 
@@ -66,9 +50,7 @@ public class TileGenerator : MonoBehaviour
       for (int j = 0; j < mapWidth; j++)
       {
         GameObject tile = MakeNewTile(i, j, currentRow.transform);
-        //MakeConnectionsOld(tile.GetComponent<TileInformation>());
         MakeConnectionsByRowThenNode(tile.GetComponent<TileInformation>(), currentRow, lastRow);
-        //MakeConnectionsByNode(tile.GetComponent<TileInformation>());
       }
 
       lastRow = currentRow;
@@ -95,8 +77,8 @@ public class TileGenerator : MonoBehaviour
 
   public void MakeConnectionsByRowThenNode(TileInformation tileInfo, GameObject currentRow, GameObject previousRow)
   {
-    int xPos = (int)tileInfo.transform.position.x;
-    int zPos = (int)tileInfo.transform.position.z;
+    int xPos, zPos;
+    GetTilePositionFromName(tileInfo.transform.name, out xPos, out zPos);
 
     // if this isnt the first tile on the row we can get the one behind it
     if (zPos > 0)
@@ -105,8 +87,8 @@ public class TileGenerator : MonoBehaviour
       TileNode thisRowNode = currentRow.transform.Find("Tile: " + xPos + "-" + (zPos - 1)).GetComponent<TileInformation>().myNode;
 
       // add connection to the two node
-      tileInfo.myNode.AddConnection(thisRowNode, true);
-      thisRowNode.AddConnection(tileInfo.myNode, true);
+      tileInfo.myNode.AddConnection(thisRowNode);
+      thisRowNode.AddConnection(tileInfo.myNode);
 
       // add connection to gizmo
       connections.Add(new GizmoConnections(tileInfo.myNode, thisRowNode, true));
@@ -119,74 +101,11 @@ public class TileGenerator : MonoBehaviour
       TileNode prevRowNode = previousRow.transform.Find("Tile: " + (xPos - 1) + "-" + zPos).GetComponent<TileInformation>().myNode;
 
       // add connection to the two node
-      tileInfo.myNode.AddConnection(prevRowNode, true);
-      prevRowNode.AddConnection(tileInfo.myNode, true);
+      tileInfo.myNode.AddConnection(prevRowNode);
+      prevRowNode.AddConnection(tileInfo.myNode);
 
       // add connection to gizmo
       connections.Add(new GizmoConnections(tileInfo.myNode, prevRowNode, true));
-    }
-  }
-
-  public void MakeConnectionsByNode(TileInformation tileInfo)
-  {
-    int xPos = (int)tileInfo.transform.position.x;
-    int zPos = (int)tileInfo.transform.position.z;
-    
-    // if this isnt the first tile on the row we can get the one behind it
-    if (zPos > 0)
-    {
-      // find the node
-      TileNode thisRowNode = transform.Find("Tile: " + xPos + "-" + (zPos - 1)).GetComponent<TileInformation>().myNode;
-
-      // add connection to the two node
-      tileInfo.myNode.AddConnection(thisRowNode, true);
-      thisRowNode.AddConnection(tileInfo.myNode, true);
-
-      // add connection to gizmo
-      connections.Add(new GizmoConnections(tileInfo.myNode, thisRowNode, true));
-    }
-
-    if (xPos > 0)
-    {
-      // find the node
-      TileNode prevRowNode = transform.Find("Tile: " + (xPos - 1) + "-" + zPos).GetComponent<TileInformation>().myNode;
-
-      // add connection to the two node
-      tileInfo.myNode.AddConnection(prevRowNode, true);
-      prevRowNode.AddConnection(tileInfo.myNode, true);
-
-      // add connection to gizmo
-      connections.Add(new GizmoConnections(tileInfo.myNode, prevRowNode, true));
-    }
-  }
-
-  public void MakeConnectionsOld(TileInformation tileInfo)
-  {
-    int connectionsSoFar = 0;
-
-    TileNode baseNode = tileInfo.myNode;
-
-    foreach (TileNode crossNode in allNodes)
-    {
-      if (baseNode.nodeTransform.position == crossNode.nodeTransform.position + Vector3.forward ||
-          baseNode.nodeTransform.position == crossNode.nodeTransform.position + Vector3.right)
-      {
-        connectionsSoFar++;
-        baseNode.AddConnection(crossNode, true);
-        crossNode.AddConnection(baseNode, true);
-
-        //GizmoConnections newConnection = ScriptableObject.CreateInstance<GizmoConnections>();
-        //newConnection.GizmoConnectionsInit(baseNode, crossNode, true);
-        //connections.Add(newConnection);
-
-        connections.Add(new GizmoConnections(baseNode, crossNode, true));
-
-        if (connectionsSoFar == 2)
-        {
-          return;
-        }
-
-      }
     }
   }
 
@@ -205,29 +124,61 @@ public class TileGenerator : MonoBehaviour
     }
   }
 
+  // removes connections from all tiles then goes though and readds them
   public void RebuildConnections()
   {
     connections = new List<GizmoConnections>();
 
+    // clear all the connections before hand
     foreach (TileNode node in allNodes)
     {
-      for (int i = 0; i < node.nodeConnections.Length; i++)
-      {
-        if (node.nodeConnections[i] != null)
-        {
-          if (node.nodeConnections[i].node.nodeTransform.position == node.nodeTransform.position + Vector3.forward ||
-              node.nodeConnections[i].node.nodeTransform.position == node.nodeTransform.position + Vector3.right)
-          {
-            Debug.Log("Making new connection between " + node.name + " & " + node.nodeConnections[i].node.name);
+      node.ClearConnections();
+    }
 
-            //GizmoConnections newConnection = ScriptableObject.CreateInstance<GizmoConnections>();
-            //newConnection.GizmoConnectionsInit(node, node.nodeConnections[i].node, node.nodeConnections[i].IsConnected);
-            //connections.Add(newConnection);
-            connections.Add(new GizmoConnections(node, node.nodeConnections[i].node, node.nodeConnections[i].IsConnected));
-          }
-        }
+    // go though and make new connectins
+    foreach (TileNode node in allNodes)
+    {
+      int xPos, zPos;
+
+      GetTilePositionFromName(node.nodeTransform.name, out xPos, out zPos);
+
+      // if this isnt the first tile on the row we can get the one behind it
+      if (zPos > 0)
+      {
+        // find the node
+        TileNode thisRowNode = GameObject.Find("Tile: " + xPos + "-" + (zPos - 1)).GetComponent<TileInformation>().myNode;
+
+        // add connection to the two node
+        node.AddConnection(thisRowNode);
+        thisRowNode.AddConnection(node);
+
+        // add connection to gizmo
+        connections.Add(new GizmoConnections(node, thisRowNode, true));
+      }
+
+      // if this isnt in the first row try to connect to the row behind it
+      if (xPos > 0)
+      {
+        // find the node
+        TileNode prevRowNode = GameObject.Find("Tile: " + (xPos - 1) + "-" + zPos).GetComponent<TileInformation>().myNode;
+
+        // add connection to the two node
+        node.AddConnection(prevRowNode);
+        prevRowNode.AddConnection(node);
+
+        // add connection to gizmo
+        connections.Add(new GizmoConnections(node, prevRowNode, true));
       }
     }
+  }
+
+  private void GetTilePositionFromName(string name, out int xPos, out int zPos)
+  {
+    name = name.Replace("Tile:", "");
+    string[] nameSplit = name.Split('-');
+
+    int.TryParse(nameSplit[0], out xPos);
+    int.TryParse(nameSplit[1], out zPos);
   }
 
   public void Clear()
@@ -293,8 +244,8 @@ public class GizmoConnections
     this.positionOne = nodeOne.nodeTransform.position;
     this.positionTwo = nodeTwo.nodeTransform.position;
 
-    this.positionOne.y = .5F;
-    this.positionTwo.y = .5F;
+    this.positionOne.y += .5F;
+    this.positionTwo.y += .5F;
 
     direction = this.positionOne - this.positionTwo;
 
@@ -320,3 +271,33 @@ public class GizmoConnections
     endNode = nodeTwo;
   }
 }
+
+//public void MakeConnectionsOld(TileInformation tileInfo)
+//{
+//  int connectionsSoFar = 0;
+
+//  TileNode baseNode = tileInfo.myNode;
+
+//  foreach (TileNode crossNode in allNodes)
+//  {
+//    if (baseNode.nodeTransform.position == crossNode.nodeTransform.position + Vector3.forward ||
+//        baseNode.nodeTransform.position == crossNode.nodeTransform.position + Vector3.right)
+//    {
+//      connectionsSoFar++;
+//      baseNode.AddConnection(crossNode, true);
+//      crossNode.AddConnection(baseNode, true);
+
+//      //GizmoConnections newConnection = ScriptableObject.CreateInstance<GizmoConnections>();
+//      //newConnection.GizmoConnectionsInit(baseNode, crossNode, true);
+//      //connections.Add(newConnection);
+
+//      connections.Add(new GizmoConnections(baseNode, crossNode, true));
+
+//      if (connectionsSoFar == 2)
+//      {
+//        return;
+//      }
+
+//    }
+//  }
+//}

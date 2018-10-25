@@ -125,6 +125,12 @@ public class TileNode : ScriptableObject
     }
   }
 
+  // inits connection to true without having to put it
+  public void AddConnection(TileNode node)
+  {
+    AddConnection(node, true);
+  }
+
   // removes connection between this node and another then removes the other nodes connection to this node 
   public void RemoveConnection(TileNode node)
   {
@@ -141,6 +147,15 @@ public class TileNode : ScriptableObject
           return;
         }
       }
+    }
+  }
+
+  // clear all connections for this node
+  public void ClearConnections()
+  {
+    for (int i = 0; i < nodeConnections.Length; i++)
+    {
+      nodeConnections[i] = null;
     }
   }
 

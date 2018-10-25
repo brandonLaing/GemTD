@@ -4,12 +4,23 @@ using UnityEngine;
 
 public class CameraMovementControls : MonoBehaviour
 {
-  [Header("Drag Variables")]
+  [Header("Drag Settings")]
   [Range(0F,100F)]
   public float dragSpeed = 100;
 
   private Vector3 dragCameraOrigin = new Vector3();
   private Vector2 dragMouseOrigin = new Vector2();
+
+  [Header("Edge Scroll Settings")]
+  [Range(10,100)]
+  public float edgeScrollRange = 20;
+  [Range(1,20)]
+  public float edgeScrollSpeed = 5;
+
+  [Header("Key Scroll Settings")]
+  [Range(10, 100)]
+  public float keyScrollRange = 20;
+
 
   [Header("Mouse Boundaries")]
   private float rightOfScreen;
@@ -17,6 +28,7 @@ public class CameraMovementControls : MonoBehaviour
   private float topOfScreen;
   private float bottomOfScreen;
 
+  [Header("Other variables")]
   private Vector2 mousePosition;
   private bool movingCamera;  // checks if we have moved our camera this frame already. We dont want two types of movement at a time
   private Camera thisCamera;
@@ -42,8 +54,8 @@ public class CameraMovementControls : MonoBehaviour
     }
 
     // before we move the camera at all we should make sure the mouse is within screen view
-    if (mousePosition.x > leftOfScreen && mousePosition.x < rightOfScreen &&
-        mousePosition.y > bottomOfScreen && mousePosition.y < topOfScreen)
+    if (mousePosition.x >= leftOfScreen && mousePosition.x <= rightOfScreen &&
+        mousePosition.y >= bottomOfScreen && mousePosition.y <= topOfScreen)
     {
       if (!movingCamera)
       {
@@ -53,9 +65,13 @@ public class CameraMovementControls : MonoBehaviour
 
       if (!movingCamera)
       {
-
+        CameraEdgeScroll();
       }
 
+      if (!movingCamera)
+      {
+        CameraKeyScroll();
+      }
     }
 
 
@@ -70,6 +86,7 @@ public class CameraMovementControls : MonoBehaviour
     leftOfScreen = 0;
     bottomOfScreen = 0;
   }
+
 
   // does the camera drag
   private void CameraDrag()
@@ -95,4 +112,41 @@ public class CameraMovementControls : MonoBehaviour
     }
   }
 
+  // does the edge scroll
+  private void CameraEdgeScroll()
+  {
+    // just get an empyt thing
+    Vector3 moveDirection = Vector3.zero;
+
+    // find what direction were moving the camera
+    if (mousePosition.x < leftOfScreen + edgeScrollRange) moveDirection += Vector3.left;
+    if (mousePosition.x > rightOfScreen - edgeScrollRange) moveDirection += Vector3.right;
+    if (mousePosition.y < bottomOfScreen + edgeScrollRange) moveDirection += Vector3.back;
+    if (mousePosition.y > topOfScreen - edgeScrollRange) moveDirection += Vector3.forward;
+
+    // update if were moveing
+    if (moveDirection != Vector3.zero)
+    {
+      movingCamera = true;
+    }
+
+    // update our position based on what way we are moving
+    transform.position += moveDirection.normalized * edgeScrollSpeed * Time.deltaTime;
+  }
+
+  // does key movement
+  private void CameraKeyScroll()
+  {
+    // set a empty move direction
+    Vector3 moveDirection = Vector3.zero;
+
+    // check what direction the player is moving
+    if (Input.GetKey(KeyCode.UpArrow)) moveDirection += Vector3.forward;
+    if (Input.GetKey(KeyCode.DownArrow)) moveDirection += Vector3.back;
+    if (Input.GetKey(KeyCode.LeftArrow)) moveDirection += Vector3.left;
+    if (Input.GetKey(KeyCode.RightArrow)) moveDirection += Vector3.right;
+
+    // move them that direction
+    transform.position += moveDirection.normalized * keyScrollRange *Time.deltaTime;
+  }
 }
