@@ -27,7 +27,6 @@ public class CameraDrag : MonoBehaviour
 
   void Update ()
   {
-    //OthersWay2();
     DoCameraDrag();
   }
 
@@ -61,7 +60,7 @@ public class CameraDrag : MonoBehaviour
         changeInMousePosition = Camera.main.ScreenToViewportPoint(mousePosition - dragMouseOrigin);
 
         // multiply each variable by the drag speed
-        Vector3 amountMovedThisFrame = new Vector3(-changeInMousePosition.x * dragSpeed, 0, -changeInMousePosition.y * dragSpeed);
+        Vector3 amountMovedThisFrame = new Vector3(-changeInMousePosition.x * dragSpeed * Time.deltaTime, 0, -changeInMousePosition.y * dragSpeed * Time.deltaTime);
 
         // then add the camera origin by the ammount moved this frame
         transform.position = dragCameraOrigin + amountMovedThisFrame;
