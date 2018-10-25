@@ -28,13 +28,13 @@ public class CameraDrag : MonoBehaviour
   void Update ()
   {
     //OthersWay2();
-    FindCameraDrag();
+    DoCameraDrag();
   }
 
   // We are doing all of our movement based off the origin
   // the idea is they move in relation to that spot so if they move right 3 units then they move back left 3 units they will be back at that point
 
-  private void FindCameraDrag()
+  private void DoCameraDrag()
   {
     mousePosition = Input.mousePosition;
 
@@ -74,58 +74,4 @@ public class CameraDrag : MonoBehaviour
       draggingCamera = false;
     }
   }
-
-  //private void OthersWay()
-  //{
-  //  if (Input.GetMouseButtonDown(0))
-  //  {
-  //    dragMouseOrigin = Input.mousePosition;
-  //    return;
-  //  }
-
-  //  if (!Input.GetMouseButtonUp(0)) return;
-
-  //  if (Input.GetMouseButton(0))
-  //  {
-  //    Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition - dragMouseOrigin);
-  //    Vector3 move = new Vector3(pos.x * dragSpeed, 0, pos.y * dragSpeed);
-  //    transform.Translate(move, Space.World);
-
-  //  }
-  //}
-
-  //private void OthersWay2()
-  //{
-  //  Vector2 mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-
-  //  float left = Screen.width * 0.2F;
-  //  float right = Screen.width - (Screen.width * 0.2F);
-
-  //  if (mousePosition.x < left)
-  //  {
-  //    draggingCamera = true;
-  //  }
-
-  //  else if (mousePosition.x > right)
-  //  {
-  //    draggingCamera = true;
-  //  }
-
-  //  if (draggingCamera)
-  //  {
-  //    if (Input.GetMouseButtonDown(2))
-  //    {
-  //      dragMouseOrigin = Input.mousePosition;
-  //      return;
-  //    }
-
-  //    if (!Input.GetMouseButton(2)) return;
-
-  //    Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition - dragMouseOrigin);
-  //    Vector3 move = new Vector3(pos.x * dragSpeed, 0, 0);
-
-  //    transform.Translate(move, Space.World);
-  //  }
-
-  //}
 }
